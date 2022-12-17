@@ -5,7 +5,7 @@
 #include "Core/KeyCode.h"
 #include "Core/MouseCode.h"
 
-// #include <glm/glm.hpp>
+#include <glm/glm.hpp>
 
 namespace Hanabi {
     class Input {

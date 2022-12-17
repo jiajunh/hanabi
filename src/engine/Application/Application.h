@@ -1,7 +1,6 @@
 #ifndef HANABI_APPLICATION_H
 #define HANABI_APPLICATION_H
 
-#include "Core/Time.h"
 #include "Core/Window.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"

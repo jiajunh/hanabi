@@ -44,7 +44,6 @@ target_precompile_headers(hanabi PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/pch/pch
 MACRO(collect_head_dirs return_list)
     FILE(GLOB_RECURSE new_list
 
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/pch/*.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/*.h
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/*.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/sandbox/*.h
@@ -79,8 +78,6 @@ target_include_directories(hanabi PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw-3.3.9/include
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glm
-
-    # ${CMAKE_CURRENT_SOURCE_DIR}/deps/glew-1.13.0/include
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog-1.x)
@@ -88,10 +85,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog-1.x)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw-3.3.9)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/glad)
 
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/glew-1.13.0)
 target_link_libraries(hanabi
     spdlog
     glfw

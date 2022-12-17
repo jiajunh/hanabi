@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "Core/Input.h"
-#include "Core/Time.h"
+#include "Core/Timestep.h"
 #include "Core/Window.h"
 #include "Core/base.h"
 #include "Events/Event.h"
@@ -27,7 +27,7 @@ namespace Hanabi {
 
     void Application::Run() {
         while (m_Running) {
-            float curTime = Time::GetTime();
+            float curTime = Timer::GetTime();
             float deltaTime = curTime - m_LastFrameTime;
             m_LastFrameTime = curTime;
             for (Layer *layer : m_LayerStack) {

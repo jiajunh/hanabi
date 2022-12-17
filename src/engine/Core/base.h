@@ -2,7 +2,6 @@
 #ifndef HANABI_BASE_H
 #define HANABI_BASE_H
 
-// #include <assert.h>
 #include <memory>
 
 #define BIT(x) (1 << x)
