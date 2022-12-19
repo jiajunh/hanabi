@@ -3,7 +3,7 @@
 #include "Application/Application.h"
 
 #include "Core/Input.h"
-// #include "Core/Time.h"
+#include "Core/Timestep.h"
 #include "Core/Window.h"
 #include "Core/base.h"
 #include "Events/Event.h"
@@ -16,6 +16,7 @@
 #include "Renderer/RenderCommand.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 #include "Renderer/VertexArray.h"
 
 #include <iostream>

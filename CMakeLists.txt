@@ -77,6 +77,7 @@ target_include_directories(hanabi PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog-1.x/include
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glfw-3.3.9/include
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/deps/stb_image
     ${CMAKE_CURRENT_SOURCE_DIR}/deps/glm
 )
 

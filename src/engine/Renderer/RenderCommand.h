@@ -39,6 +39,10 @@ namespace Hanabi {
             s_RendererAPI->SetLineWidth(width);
         }
 
+        static void EnableDepthTest() {
+            s_RendererAPI->EnableDepthTest();
+        }
+
     private:
         static Scope<RendererAPI> s_RendererAPI;
     };

@@ -7,6 +7,7 @@
 #include "Events/MouseEvent.h"
 #include "ImGui/ImGuiLayer.h"
 #include "Layers/LayerStack.h"
+#include "pch.h"
 
 namespace Hanabi {
     class Application {
@@ -25,6 +26,9 @@ namespace Hanabi {
         Scope<Window> m_Window;
         bool m_Running = true;
         LayerStack m_LayerStack;
+
+        // std::unique_ptr<ImGuiLayer> m_ImGuiLayer;
+        ImGuiLayer *m_ImGuiLayer;
 
         float m_LastFrameTime = 0.0f;
 

@@ -29,6 +29,8 @@ namespace Hanabi {
 
         virtual void SetLineWidth(float width) = 0;
 
+        virtual void EnableDepthTest() = 0;
+
         static API GetAPI() { return s_API; }
         static Scope<RendererAPI> Create();
 

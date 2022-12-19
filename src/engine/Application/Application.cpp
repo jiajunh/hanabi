@@ -4,6 +4,7 @@
 #include "Core/Window.h"
 #include "Core/base.h"
 #include "Events/Event.h"
+#include "ImGui/ImGuiLayer.h"
 
 #include "Logs/Log.h"
 
@@ -20,6 +21,8 @@ namespace Hanabi {
         m_Window = Window::Create();
         m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
+        m_ImGuiLayer = new ImGuiLayer();
+        PushOverlay(m_ImGuiLayer);
         // VAO, VBO, IndexBuffer, Shader
     }
 
@@ -33,20 +36,27 @@ namespace Hanabi {
             for (Layer *layer : m_LayerStack) {
                 layer->OnUpdate(deltaTime);
             }
+
+            m_ImGuiLayer->Begin();
+            for (Layer *layer : m_LayerStack) {
+                layer->OnImGuiRender();
+            }
+            m_ImGuiLayer->End();
             m_Window->OnUpdate();
         }
     }
 
     void Application::OnEvent(Event &e) {
-        // HANABI_CORE_INFO("{}", e.ToString());
-        if (e.GetEventType() == EventType::KeyPressed) {
-            KeyEvent &event = (KeyPressedEvent &)e;
-            HANABI_INFO("{0}", event.GetKeyCode());
-        }
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(HANABI_BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(HANABI_BIND_EVENT_FN(Application::OnWindowResize));
+
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+            if (e.Handled)
+                break;
+            (*it)->OnEvent(e);
+        }
     }
 
     bool Application::OnWindowClose(WindowCloseEvent &e) {

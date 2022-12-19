@@ -37,9 +37,19 @@ namespace Hanabi {
         shader->Bind();
         shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
         shader->SetMat4("u_Transform", transform);
-        // HANABI_CORE_INFO(glm::to_string(s_SceneData->ViewProjectionMatrix));
         vertexArray->Bind();
         RenderCommand::DrawIndexed(vertexArray);
+    }
+
+    void Renderer::Submit(const Ref<Shader> &shader,
+                          const Ref<VertexArray> &vertexArray,
+                          uint32_t vertexCount,
+                          const glm::mat4 &transform) {
+        shader->Bind();
+        shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+        shader->SetMat4("u_Transform", transform);
+        vertexArray->Bind();
+        RenderCommand::DrawLines(vertexArray, vertexCount);
     }
 
 }

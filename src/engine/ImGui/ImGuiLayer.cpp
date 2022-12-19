@@ -1,99 +1,96 @@
-// #include "ImGui/ImGuiLayer.h"
-// #include "Application/Application.h"
-// #include "Logs/Log.h"
-// #include "pch.h"
+#include "ImGui/ImGuiLayer.h"
+#include "Application/Application.h"
+#include "Event.h"
+#include "Logs/Log.h"
+#include "pch.h"
 
-// #include "imgui.h"
-// #include "imgui_impl_glfw.h"
-// #include "imgui_impl_opengl3.h"
-// #include <stdio.h>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <stdio.h>
 
-// // #include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-// namespace Hanabi {
+namespace Hanabi {
 
-//     ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
+    ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
 
-//     void ImGuiLayer::OnAttach() {
+    void ImGuiLayer::OnAttach() {
 
-//         HANABI_CORE_INFO("ImGui Layer On Attach");
+        HANABI_CORE_INFO("ImGui Layer On Attach");
 
-//         const char *glsl_version = "#version 410";
-//         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-//         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-//         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
+        const char *glsl_version = "#version 410";
 
-//         // Application &app = Application::Get();
-//         // GLFWwindow *window = static_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow());
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO &io = ImGui::GetIO();
+        (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+        // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
+                                                            // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
+        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-//         GLFWwindow *window = glfwCreateWindow(600, 360, "ImGui", NULL, NULL);
-//         glfwMakeContextCurrent(window);
+        ImGui::StyleColorsDark();
 
-//         IMGUI_CHECKVERSION();
-//         ImGui::CreateContext();
+        ImGuiStyle &style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
 
-//         ImGuiIO &io = ImGui::GetIO();
-//         (void)io;
-//         ImGui::StyleColorsDark();
-//         ImGui_ImplGlfw_InitForOpenGL(window, true);
-//         ImGui_ImplOpenGL3_Init(glsl_version);
+        SetDarkThemeColors();
 
-//         bool show_demo_window = true;
-//         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+        Application &app = Application::Get();
+        GLFWwindow *window = static_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow());
 
-//         while (!glfwWindowShouldClose(window)) {
+        // Setup Platform/Renderer bindings
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init("#version 410");
+    }
 
-//             glfwPollEvents();
-//             ImGui_ImplOpenGL3_NewFrame();
-//             ImGui_ImplGlfw_NewFrame();
-//             ImGui::NewFrame();
-//             ImGui::ShowDemoWindow(&show_demo_window);
-//             static float f = 0.0f;
-//             static int counter = 0;
+    void ImGuiLayer::OnDetach() {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    }
 
-//             ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+    void ImGuiLayer::OnEvent(Event &e) {
+        if (m_BlockEvents) {
+            ImGuiIO &io = ImGui::GetIO();
+            e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+            e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+        }
+    }
 
-//             ImGui::Text("This is some useful text.");          // Display some text (you can use a format strings too)
-//             ImGui::Checkbox("Demo Window", &show_demo_window); // Edit bools storing our window open/close state
+    void ImGuiLayer::Begin() {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
 
-//             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
-//             ImGui::ColorEdit3("clear color", (float *)&clear_color); // Edit 3 floats representing a color
+    void ImGuiLayer::End() {
 
-//             if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
-//                 counter++;
-//             ImGui::SameLine();
-//             ImGui::Text("counter = %d", counter);
+        ImGuiIO &io = ImGui::GetIO();
+        Application &app = Application::Get();
+        io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-//             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-//             ImGui::End();
+        // Rendering
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-//             ImGui::Render();
-//             int display_w, display_h;
-//             glfwGetFramebufferSize(window, &display_w, &display_h);
-//             glViewport(0, 0, display_w, display_h);
-//             glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-//             glClear(GL_COLOR_BUFFER_BIT);
-//             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            GLFWwindow *backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+    }
 
-//             glfwSwapBuffers(window);
-//         }
-//     }
+    void ImGuiLayer::SetDarkThemeColors() {}
 
-//     void ImGuiLayer::OnDetach() {
-//         ImGui_ImplOpenGL3_Shutdown();
-//         ImGui_ImplGlfw_Shutdown();
-//         ImGui::DestroyContext();
-//     }
+    void ImGuiLayer::OnImGuiRender() {
+    }
 
-//     void ImGuiLayer::OnEvent(Event &e) {
-//     }
-
-//     void ImGuiLayer::Begin() {}
-//     void ImGuiLayer::End() {}
-
-//     void ImGuiLayer::SetDarkThemeColors() {}
-
-//     void ImGuiLayer::OnUpdate() {
-//     }
-// }
+}
